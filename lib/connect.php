@@ -1,10 +1,10 @@
 <?php
 
 function connect_db() {
-	$server="nakedmaya.com"; // Host name
-	$user="nakedmay_mydev"; // Mysql username
+	$server="localhost"; // Host name
+	$user="nakedmay"; // Mysql username
 	$pass="123@qwe"; // Mysql password
-	$database="nakedmay_mydev"; // Database name
+	$database="nakedmay"; // Database name
 	$connection = new mysqli($server, $user, $pass, $database);
 
 	return $connection;
