@@ -1,0 +1,92 @@
+[
+{
+  "url":"http://www.zone-h.org/archive/special=1",
+  "xpath":"//*[@id=\"ldeface\"]",
+  "documentType":"html",
+  "category":"defacement"
+},
+{
+  "url":"http://www.hack-mirror.com/attacks.html",
+  "xpath":"/html/body/div[4]/div[1]/div[10]/div[5]/div/div/div/div[2]/table",
+  "documentType":"html",
+  "category":"defacement"
+},
+{
+  "url":"http://zone-hc.org/archive-1.html",
+  "xpath":"",
+  "documentType":"html",
+  "category":"defacement"
+},
+{
+  "url":"http://malc0de.com/database/",
+  "xpath":"/html/body/font/center/table",
+  "documentType":"html",
+  "category":"malmware"
+},
+{
+  "url":"http://vxvault.net/ViriList.php",
+  "xpath":"//*[@id=\"page\"]/table",
+  "documentType":"html",
+  "category":"malmware"
+},
+{
+  "url":"http://hosts-file.net/?s=Browse&f=EXP",
+  "xpath":"/html/body/table[2]/tbody/tr/td/table/tbody/tr[3]/td/table[2]",
+  "documentType":"html",
+  "category":"malmware"
+},
+{
+  "url":"http://hosts-file.net/?s=Browse&f=EMD",
+  "xpath":"/html/body/table[2]/tbody/tr/td/table/tbody/tr[3]/td/table[2]",
+  "documentType":"html",
+  "category":"malmware"
+},
+{
+  "url":"http://www.malwaredomainlist.com/mdl.php",
+  "xpath":"//*[@id=\"content_box\"]/div/div[3]/table",
+  "documentType":"html",
+  "category":"malmware"
+},
+{
+  "url":"https://zeustracker.abuse.ch/rss.php",
+  "xpath":"",
+  "documentType":"rss",
+  "category":"botnet"
+},
+{
+  "url":"http://www.malwaredomainlist.com/hostslist/mdl.xml",
+  "xpath":"",
+  "documentType":"xml",
+  "category":"botnet"
+},
+{
+  "url":"http://data.phishtank.com/data/56e517c2fa8e04f21ea60a00a46e7e5a4f1823ff050542432a489a5c0202503d/online-valid.json",
+  "xpath":"",
+  "documentType":"json",
+  "category":"phishing"
+},
+{
+  "url":"https://openphish.com",
+  "xpath":"//*[@id=\"wrap\"]/div[1]/table",
+  "documentType":"html",
+  "category":"phishing"
+},
+{
+  "url":"http://hosts-file.net/?s=Browse&f=PSH",
+  "xpath":"/html/body/table[2]/tbody/tr/td/table/tbody/tr[3]/td/table[2]",
+  "documentType":"html",
+  "category":"phishing"
+},
+{
+  "url":"https://myip.ms/browse/blacklist/Blacklist_IP_Blacklist_IP_Addresses_Live_Database_Real-time",
+  "xpath":"//*[@id=\"blacklist_tbl\"]",
+  "documentType":"html",
+  "category":"spam"
+},
+{
+  "url":"",
+  "xpath":"",
+  "documentType":"html",
+  "category":"spam"
+}
+]

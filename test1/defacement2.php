@@ -3,15 +3,15 @@
 
 	require('..\lib\lib.php');//HERE
 
-	// MALM 1
+	// DEFACE 1
 	$url = "http://www.zone-h.org/archive/special=1";
 	$path = "//*[@id=\"ldeface\"]";
 
-	// MALM 2
+	// DEFACE 2
 	// $url = "http://www.hack-mirror.com/attacks.html";
 	// $path = "/html/body/div[4]/div[1]/div[10]/div[5]/div/div/div/div[2]/table";
 
-	// MALM 3
+	// DEFACE 3
 	// $url = "http://zone-hc.org/archive-1.html";
 	// $path = "";
 
