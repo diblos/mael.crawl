@@ -21,12 +21,20 @@ ini_set('date.timezone', 'Asia/Kuala_Lumpur');
 
 ini_set('always_populate_raw_post_data', '-1');//PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
 
+function getEnvironment($url,$listcode)
+{
+    $contents = file_get_contents($url);
+    $json =json_decode($contents);
+    // var_dump($json[$listcode-1]);
+    return $json[$listcode-1];
+}
+
 function isUpdateConfig($arr)
 {
     return valFALSE;
 }
 
-function login($username, $password) 
+function login($username, $password)
 {
 	$db = connect_db();
     $sql = "SELECT name FROM tbl_user WHERE username='".$username."' AND password=sha('".$password."');";
@@ -34,7 +42,7 @@ function login($username, $password)
 	$db->close();
 
 	if ($result->num_rows > 0) {
-	 
+
 	 	$row = $result->fetch_assoc();
    		$arrRtn['user'] = $row["name"]; //Just return the user name for reference
         $arrRtn['token'] = bin2hex(openssl_random_pseudo_bytes(16)); //generate a random token
@@ -59,8 +67,8 @@ function updateToken($uid,$token,$expire)
 
     $result = $db->query($sql);
 	$db->close();
-    
-    if($result){    
+
+    if($result){
         return 0;
     }else{
      	return 1;
@@ -74,15 +82,15 @@ function archiveToken($uid)
 
     $result = $db->query($sql);
     $db->close();
-    
-    if($result){    
+
+    if($result){
         return 0;
     }else{
         return 1;
     }
 }
 
-function checkToken($token) 
+function checkToken($token)
 {
 	$db = connect_db();
     $sql = "SELECT id FROM tbl_user WHERE token='".$token."' AND token_expire > now();";
@@ -107,13 +115,13 @@ function Accesslog($token,$route,$status)
     if($status==='EXPIRED'){
         $sql = "INSERT INTO tbl_user_access (origin,username,token,route,method,status) VALUES ('$origin',IFNULL((SELECT username from tbl_token_audit WHERE token='$token'),''),'$token','$route','$method','$status')";
     }else{
-        $sql = "INSERT INTO tbl_user_access (origin,username,token,route,method,status) VALUES ('$origin',IFNULL((SELECT username from tbl_user WHERE token='$token'),''),'$token','$route','$method','$status')";    
-    }   
+        $sql = "INSERT INTO tbl_user_access (origin,username,token,route,method,status) VALUES ('$origin',IFNULL((SELECT username from tbl_user WHERE token='$token'),''),'$token','$route','$method','$status')";
+    }
 
     $result = $db->query($sql);
 	$db->close();
-    
-    if($result){    
+
+    if($result){
         return 0;
     }else{
      	return 1;
@@ -137,7 +145,7 @@ function get_client_ip_server() {
         $ipaddress = $_SERVER['REMOTE_ADDR'];
     else
         $ipaddress = 'UNKNOWN';
- 
+
     return $ipaddress;
 }
 
@@ -179,14 +187,14 @@ function getResultFromYQL($yql_query, $env = '') {
 }
 
 function CUTITOUT($result,$str){
-    
+
     for ($i = 0; $i < count($result->query->results->pre->a); ++$i) {
         if (strpos($result->query->results->pre->a[$i]->content, $str) !== false){
             $nkey = $i;
-        }   
+        }
     }
     unset($result->query->results->pre->a[$nkey]);
-   
+
 }
 
 function GetDisplayName($prefix){
@@ -256,10 +264,10 @@ function SETTLEDATE($txt){
           // print "$dayofweek1$c1$ws1$month1$ws2$day1$c2$ws3$year1$ws4$time1\n";
           // var_dump($matches);
 
-          // foreach ($matches[0] as $key => $value){        
+          // foreach ($matches[0] as $key => $value){
           //       echo trim($value).' | ';
           // }
-        
+
       }
 
     return $matches[0];
@@ -279,7 +287,7 @@ class HighwayList {
             $mydata->name = $mydata->content;
             unset($mydata->value);
             unset($mydata->content);
-        }        
+        }
     }
 }
 
@@ -307,7 +315,7 @@ class CameraList {
             $mydata->name = $mydata->content;
             unset($mydata->href);
             unset($mydata->content);
-        }  
+        }
     }
 }
 
@@ -343,7 +351,7 @@ class CinemaList {
             $mydata->name = $mydata->content;
             unset($mydata->value);
             unset($mydata->content);
-        }        
+        }
     }
 }
 
@@ -383,7 +391,7 @@ class ShowList {
                 if(isset($my->a)){
                     array_push($tmp, $my->a->content);
                     unset($my->a);
-                }                
+                }
             }
             if(sizeof($tmp)>0){$mydata->times = $tmp;};
         }
