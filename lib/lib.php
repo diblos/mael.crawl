@@ -3,7 +3,7 @@
 define("ENV", "environment.json", true);
 define("YAPI", "http://query.yahooapis.com/v1/public/yql", true);
 
-//ini_set('error_reporting', E_ERROR);
+ini_set('error_reporting', E_ERROR);
 ini_set('display_errors', '1');
 ini_set('date.timezone', 'Asia/Kuala_Lumpur');
 // ini_set('date.timezone', 'UTC');
@@ -18,81 +18,18 @@ function getEnvironment($url,$listcode)
     return $json[$listcode-1];
 }
 
-function isUpdateConfig($arr)
-{
-    return valFALSE;
-}
-
-function login($username, $password)
-{
-	$db = connect_db();
-    $sql = "SELECT name FROM tbl_user WHERE username='".$username."' AND password=sha('".$password."');";
-    $result = $db->query($sql);
-	$db->close();
-
-	if ($result->num_rows > 0) {
-
-	 	$row = $result->fetch_assoc();
-   		$arrRtn['user'] = $row["name"]; //Just return the user name for reference
-        $arrRtn['token'] = bin2hex(openssl_random_pseudo_bytes(16)); //generate a random token
-
-        $tokenExpiration = date('Y-m-d H:i:s', strtotime('+12 hour'));//the expiration date will be in one hour from the current moment
-
-        updateToken($username, $arrRtn['token'], $tokenExpiration); //This function can update the token on the database and set the expiration date-time, implement your own
-        // return json_encode($arrRtn);
-
-	    return $arrRtn;
-	} else {
-	    return false;
-	}
-
-}
-
-function updateToken($uid,$token,$expire)
-{
-    archiveToken($uid);
-	$db = connect_db();
-    $sql = "UPDATE tbl_user SET token='".$token."', token_expire='".$expire."' WHERE username='".$uid."';";
-
-    $result = $db->query($sql);
-	$db->close();
-
-    if($result){
-        return 0;
-    }else{
-     	return 1;
-    }
-}
-
-function archiveToken($uid)
-{
-    $db = connect_db();
-    $sql = "INSERT INTO tbl_token_audit (username,token,token_expire) SELECT username,token,token_expire FROM tbl_user WHERE username = '".$uid."';";
-
-    $result = $db->query($sql);
-    $db->close();
-
-    if($result){
-        return 0;
-    }else{
-        return 1;
-    }
-}
-
-function checkToken($token)
-{
-	$db = connect_db();
-    $sql = "SELECT id FROM tbl_user WHERE token='".$token."' AND token_expire > now();";
-    // echo($sql);
-    $result = $db->query($sql);
-	$db->close();
-
-	if ($result->num_rows > 0) {
-		$row = $result->fetch_assoc();
-	    return $row["id"];
-	} else {
-	    return false;
-	}
+function queryEnvironment($env){
+  try {
+      $url = $env->url;
+      $path = $env->xpath;
+      $doc = $env->documentType;
+      //Code to access YQL using PHP
+      $yql_query = "select ".(($env->object == '') ? "*" : $env->object)." from ".$doc." where url='".$url."'".(($path == '') ? "" : " and xpath='".$path."'");
+      return getResultFromYQL(sprintf($yql_query),'store%3A%2F%2Fdatatables.org%2Falltableswithkeys');
+  } catch (Exception $e) {
+      echo "ERR: queryEnvironment >".$e->messaga ;
+      return false;
+  }
 }
 
 // Function to get the client ip address
@@ -242,13 +179,53 @@ function SETTLEDATE($txt){
 }
 
 function ProcessResult($result,$id){
-  echo($result);
+    switch ($id) {
+      case 9:
+          $r = new stdClass();
+          $r = json_decode($result);
+          $r = new BotnetObj09(json_decode($result));
 
-  //	$r = new stdClass();
-  //	$r = json_decode($result);
-    // $r = new CameraList(json_decode($result));
+          echo (json_encode($r));
 
-  //	var_dump($r);
+          break;
+      case 10:
+        	$r = new stdClass();
+        	$r = json_decode($result);
+          $r = new BotnetObj10(json_decode($result));
+
+          echo (json_encode($r));
+
+          break;
+      default:
+          echo($result);
+    }
+}
+// BOTNET 9
+class BotnetObj09 {
+    public function __construct($obj) {
+        $this->query->count = count($obj->query->results->rss->channel->item);
+        $this->query->created = $obj->query->created;
+        $this->query->lang = $obj->query->lang;
+        $this->query->results->item = $obj->query->results->item;
+        foreach($this->query->results->item AS $mydata)
+        {
+            $mydata->guid = explode("&id=",$mydata->guid)[1];
+        }
+    }
+}
+
+// BOTNET 10
+class BotnetObj10 {
+    public function __construct($obj) {
+        $this->query->count = count($obj->query->results->rss->channel->item);
+        $this->query->created = $obj->query->created;
+        $this->query->lang = $obj->query->lang;
+        $this->query->results->item = $obj->query->results->rss->channel->item;
+        foreach($this->query->results->item AS $mydata)
+        {
+            $mydata->guid = $mydata->guid->content;
+        }
+    }
 }
 
 // LLMTRAFIK OBJECTS

@@ -2,6 +2,7 @@
 {
   "id":1,
   "url":"http://www.zone-h.org/archive/special=1",
+  "object":"*",
   "xpath":"//*[@id=\"ldeface\"]",
   "documentType":"html",
   "category":"defacement"
@@ -9,6 +10,7 @@
 {
   "id":2,
   "url":"http://www.hack-mirror.com/attacks.html",
+  "object":"*",
   "xpath":"/html/body/div[4]/div[1]/div[10]/div[5]/div/div/div/div[2]/table",
   "documentType":"html",
   "category":"defacement"
@@ -16,6 +18,7 @@
 {
   "id":3,
   "url":"http://zone-hc.org/archive-1.html",
+  "object":"*",
   "xpath":"",
   "documentType":"html",
   "category":"defacement"
@@ -23,6 +26,7 @@
 {
   "id":4,
   "url":"http://malc0de.com/database/",
+  "object":"*",
   "xpath":"/html/body/font/center/table",
   "documentType":"html",
   "category":"malmware"
@@ -30,6 +34,7 @@
 {
   "id":5,
   "url":"http://vxvault.net/ViriList.php",
+  "object":"*",
   "xpath":"//*[@id=\"page\"]/table",
   "documentType":"html",
   "category":"malmware"
@@ -37,6 +42,7 @@
 {
   "id":6,
   "url":"http://hosts-file.net/?s=Browse&f=EXP",
+  "object":"*",
   "xpath":"/html/body/table[2]/tbody/tr/td/table/tbody/tr[3]/td/table[2]",
   "documentType":"html",
   "category":"malmware"
@@ -44,6 +50,7 @@
 {
   "id":7,
   "url":"http://hosts-file.net/?s=Browse&f=EMD",
+  "object":"*",
   "xpath":"/html/body/table[2]/tbody/tr/td/table/tbody/tr[3]/td/table[2]",
   "documentType":"html",
   "category":"malmware"
@@ -51,6 +58,7 @@
 {
   "id":8,
   "url":"http://www.malwaredomainlist.com/mdl.php",
+  "object":"*",
   "xpath":"//*[@id=\"content_box\"]/div/div[3]/table",
   "documentType":"html",
   "category":"malmware"
@@ -58,6 +66,7 @@
 {
   "id":9,
   "url":"https://zeustracker.abuse.ch/rss.php",
+  "object":"*",
   "xpath":"",
   "documentType":"rss",
   "category":"botnet"
@@ -65,6 +74,7 @@
 {
   "id":10,
   "url":"http://www.malwaredomainlist.com/hostslist/mdl.xml",
+  "object":"channel",
   "xpath":"",
   "documentType":"xml",
   "category":"botnet"
@@ -72,6 +82,7 @@
 {
   "id":11,
   "url":"http://data.phishtank.com/data/56e517c2fa8e04f21ea60a00a46e7e5a4f1823ff050542432a489a5c0202503d/online-valid.json",
+  "object":"*",
   "xpath":"",
   "documentType":"json",
   "category":"phishing"
@@ -79,6 +90,7 @@
 {
   "id":12,
   "url":"https://openphish.com",
+  "object":"*",
   "xpath":"//*[@id=\"wrap\"]/div[1]/table",
   "documentType":"html",
   "category":"phishing"
@@ -86,6 +98,7 @@
 {
   "id":13,
   "url":"http://hosts-file.net/?s=Browse&f=PSH",
+  "object":"*",
   "xpath":"/html/body/table[2]/tbody/tr/td/table/tbody/tr[3]/td/table[2]",
   "documentType":"html",
   "category":"phishing"
@@ -93,6 +106,7 @@
 {
   "id":14,
   "url":"https://myip.ms/browse/blacklist/Blacklist_IP_Blacklist_IP_Addresses_Live_Database_Real-time/",
+  "object":"*",
   "xpath":"//*[@id=\"blacklist_tbl\"]",
   "documentType":"html",
   "category":"spam"
@@ -100,6 +114,7 @@
 {
   "id":15,
   "url":"",
+  "object":"*",
   "xpath":"",
   "documentType":"html",
   "category":"spam"
