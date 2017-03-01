@@ -1,18 +1,7 @@
 <?php
-// LLMTRAFIK
-define("ROOT", "http://localhost/lh/llmtrafik", true);
-// define("ROOT", "http://beta.nakedmaya.com/llmtrafik/", true);
 
-define("LLM_URI",'http://www.llm.gov.my/');
-define("CAM_URI",'http://vigroot.llm.gov.my/vigroot/cam_root/web/');
+define("ENV", "environment.json", true);
 define("YAPI", "http://query.yahooapis.com/v1/public/yql", true);
-
-define("CAMROOT", "http://vigroot.llm.gov.my", true);
-
-define("valTRUE",1);
-define("valFALSE",0);
-define("RECORD_LIMIT",50);
-
 
 //ini_set('error_reporting', E_ERROR);
 ini_set('display_errors', '1');
@@ -104,28 +93,6 @@ function checkToken($token)
 	} else {
 	    return false;
 	}
-}
-
-function Accesslog($token,$route,$status)
-{
-    $origin = get_client_ip_server();
-    $method = $_SERVER['REQUEST_METHOD'];
-	$db = connect_db();
-
-    if($status==='EXPIRED'){
-        $sql = "INSERT INTO tbl_user_access (origin,username,token,route,method,status) VALUES ('$origin',IFNULL((SELECT username from tbl_token_audit WHERE token='$token'),''),'$token','$route','$method','$status')";
-    }else{
-        $sql = "INSERT INTO tbl_user_access (origin,username,token,route,method,status) VALUES ('$origin',IFNULL((SELECT username from tbl_user WHERE token='$token'),''),'$token','$route','$method','$status')";
-    }
-
-    $result = $db->query($sql);
-	$db->close();
-
-    if($result){
-        return 0;
-    }else{
-     	return 1;
-    }
 }
 
 // Function to get the client ip address
@@ -272,6 +239,16 @@ function SETTLEDATE($txt){
 
     return $matches[0];
 
+}
+
+function ProcessResult($result,$id){
+  echo($result);
+
+  //	$r = new stdClass();
+  //	$r = json_decode($result);
+    // $r = new CameraList(json_decode($result));
+
+  //	var_dump($r);
 }
 
 // LLMTRAFIK OBJECTS

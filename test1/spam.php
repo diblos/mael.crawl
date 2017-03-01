@@ -4,7 +4,9 @@
 	require('..\lib\lib.php');//HERE
 
 	// SPAM 1
-	$env = getEnvironment('environment.json',14);
+	$crawl_id = 14;
+
+	$env = getEnvironment(ENV,$crawl_id);
 	$url = $env->url;
 	$path = $env->xpath;
 	$doc = $env->documentType;
@@ -14,6 +16,6 @@
 
 	$result = getResultFromYQL(sprintf($yql_query),'store%3A%2F%2Fdatatables.org%2Falltableswithkeys');
 
-	echo($result);
+	ProcessResult($result,$crawl_id)
 
 ?>

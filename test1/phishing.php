@@ -4,13 +4,15 @@
 	require('..\lib\lib.php');//HERE
 
 	// PHISH 1
-	// $env = getEnvironment('environment.json',11);
+	// $crawl_id = 11;
 
 	// PHISH 2
-	// $env = getEnvironment('environment.json',12);
+	$crawl_id = 12;
 
 	// PHISH 3
-	$env = getEnvironment('environment.json',13);
+	// $crawl_id = 13;
+
+	$env = getEnvironment(ENV,$crawl_id);
 	$url = $env->url;
 	$path = $env->xpath;
 	$doc = $env->documentType;
@@ -20,12 +22,6 @@
 
 	$result = getResultFromYQL(sprintf($yql_query),'store%3A%2F%2Fdatatables.org%2Falltableswithkeys');
 
-	echo($result);
-
-//	$r = new stdClass();
-//	$r = json_decode($result);
-	// $r = new CameraList(json_decode($result));
-
-//	var_dump($r);
+	ProcessResult($result,$crawl_id)
 
 ?>

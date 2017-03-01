@@ -4,13 +4,15 @@
 	require('..\lib\lib.php');//HERE
 
 	// DEFACE 1
-	// $env = getEnvironment('environment.json',1);
+	// $crawl_id = 1;
 
 	// DEFACE 2
-	$env = getEnvironment('environment.json',2);
+	$crawl_id = 2;
 
 	// DEFACE 3
-	// $env = getEnvironment('environment.json',3);
+	// $crawl_id = 3;
+
+	$env = getEnvironment(ENV,$crawl_id);
 	$url = $env->url;
 	$path = $env->xpath;
 	$doc = $env->documentType;
@@ -20,12 +22,6 @@
 
 	$result = getResultFromYQL(sprintf($yql_query),'store%3A%2F%2Fdatatables.org%2Falltableswithkeys');
 
-	echo($result);
-
-//	$r = new stdClass();
-//	$r = json_decode($result);
-	// $r = new CameraList(json_decode($result));
-
-//	var_dump($r);
+	ProcessResult($result,$crawl_id)
 
 ?>
