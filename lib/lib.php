@@ -32,7 +32,19 @@ function queryEnvironment($env){
   }
 }
 
-// Function to get the client ip address
+function log_botnet($item){
+	$db = connect_db();
+	$query=mysqli_query($db,"REPLACE INTO botnet (title,link,description,guid) VALUES ('$item->title' , '$item->link','$item->description','$item->guid');");
+	$db->close();
+}
+
+function log_spam($item){
+	$db = connect_db();
+	$query=mysqli_query($db,"REPLACE INTO spam (ip,host,country,latest_type_threat,total_website,total_browser,latest_activity) VALUES ('$item->ip' , '$item->host','$item->country','$item->latest_type_threat','$item->total_website','$item->total_browser','$item->latest_activity');");
+	$db->close();
+}
+
+// FUNCTION TO GET THE CLIENT IP ADDRESS
 function get_client_ip_server() {
     $ipaddress = '';
     if ($_SERVER['HTTP_CLIENT_IP'])
@@ -180,26 +192,107 @@ function SETTLEDATE($txt){
 
 function ProcessResult($result,$id){
     switch ($id) {
-      case 9:
+      case 9:// BOTNET
           $r = new stdClass();
           $r = json_decode($result);
           $r = new BotnetObj09(json_decode($result));
 
-          echo (json_encode($r));
+          // echo (json_encode($r));
+          foreach($r->query->results->item AS $mydata)
+          {
+              log_botnet($mydata);
+              // echo($mydata->link.PHP_EOL);
+          }
 
           break;
-      case 10:
+      case 10:// BOTNET
         	$r = new stdClass();
         	$r = json_decode($result);
           $r = new BotnetObj10(json_decode($result));
 
-          echo (json_encode($r));
+          // echo (json_encode($r));
+          foreach($r->query->results->item AS $mydata)
+          {
+              log_botnet($mydata);
+          }
 
+          break;
+      case 14:// SPAM
+          $r = new stdClass();
+          $r = json_decode($result);
+          $r = new SpamObj14(json_decode($result));
+
+          // echo (json_encode($r));
+          foreach($r->query->results->item AS $mydata)
+          {
+              log_spam($mydata);
+          }
           break;
       default:
           echo($result);
     }
 }
+// SPAM 14
+class SpamObj14 {
+    public function __construct($obj) {
+
+        $rs = array();
+        foreach($obj->query->results->table->tbody->tr AS $mydata)
+        {
+            unset($mydata->class);
+            // $mydata->tdcount = count($mydata->td);
+            if(count($mydata->td)==8){
+                $c = 0;
+                $r = new stdClass();
+                foreach($mydata->td AS $mymy)
+                {
+                    switch ($c) {
+                      case 1:
+                          $r->ip = $mymy->a->content;
+                          break;
+                      case 2:
+                          $r->host = $mymy->content;
+                          break;
+                      case 3:
+                          $r->country = $mymy->a->content;
+                          break;
+                      case 4:
+                          $r->latest_type_threat = $mymy->a->content;
+                          break;
+                      case 5:
+                          $r->total_website = $mymy->a->content;
+                          break;
+                      case 6:
+                          $r->total_browser = $mymy->a->content;
+                          break;
+                      case 7:
+                          $r->latest_activity = $mymy->content;
+                          break;
+                      default:
+                          // echo($result);
+                    }
+                    $c++;
+                    unset($mymy->class);
+                    unset($mymy->align);
+                    unset($mymy->img);
+                    unset($mymy->br);
+
+                }
+                // $mydata->tdcount = $r;
+                array_push($rs, $r);
+            }else{
+                unset($mydata);
+            }
+        }
+
+        $this->query->count = count($rs);
+        $this->query->created = $obj->query->created;
+        $this->query->lang = $obj->query->lang;
+        // $this->query->results->item = $obj->query->results->table;
+        $this->query->results->item = $rs;
+    }
+}
+
 // BOTNET 9
 class BotnetObj09 {
     public function __construct($obj) {
@@ -224,70 +317,6 @@ class BotnetObj10 {
         foreach($this->query->results->item AS $mydata)
         {
             $mydata->guid = $mydata->guid->content;
-        }
-    }
-}
-
-// LLMTRAFIK OBJECTS
-class HighwayList {
-    public function __construct($obj) {
-        $this->query->count = $obj->query->count;
-        $this->query->created = $obj->query->created;
-        $this->query->lang = $obj->query->lang;
-        $this->query->results->highway = $obj->query->results->option;
-        foreach($this->query->results->highway AS $mydata)
-        {
-            $mydata->prefix = $mydata->value;
-            $mydata->name = $mydata->content;
-            unset($mydata->value);
-            unset($mydata->content);
-        }
-    }
-}
-
-class CameraList0 {
-    public function __construct($obj) {
-        $this->query->count = $obj->query->count;
-        $this->query->created = $obj->query->created;
-        $this->query->lang = $obj->query->lang;
-        $this->query->results->camera = $obj->query->results->span;
-        if(!is_array($this->query->results->camera)){
-            $this->query->results->camera = (array) $this->query->results->camera;
-        }
-    }
-}
-
-class CameraList {
-    public function __construct($obj) {
-        $this->query->count = $obj->query->count;
-        $this->query->created = $obj->query->created;
-        $this->query->lang = $obj->query->lang;
-        $this->query->results->camera = $obj->query->results->a;
-        foreach($this->query->results->camera AS $mydata)
-        {
-            $mydata->image = $mydata->href;
-            $mydata->name = $mydata->content;
-            unset($mydata->href);
-            unset($mydata->content);
-        }
-    }
-}
-
-class CameraList2 {
-    public function __construct($obj) {
-        $this->query->count = $obj->query->count;
-        $this->query->created = $obj->query->created;
-        $this->query->lang = $obj->query->lang;
-        $this->query->prefix = $obj->query->prefix;
-        $this->query->name = $obj->query->name;
-        $this->query->results->camera = $obj->query->results->pre->a;
-        foreach($this->query->results->camera AS $mydata)
-        {
-            $mydata->image = $mydata->href;
-            $mydata->name = $mydata->content;
-            $mydata->timestamp = $mydata->timestamp;
-            unset($mydata->href);
-            unset($mydata->content);
         }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 // SPAM
-
+	require('..\lib\connect.php');//HERE
 	require('..\lib\lib.php');//HERE
 
 	// SPAM 1
