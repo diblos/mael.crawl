@@ -4,19 +4,19 @@
 	require('..\lib\lib.php');//HERE
 
 	// PHISH 1
-	// $url = "http://data.phishtank.com/data/56e517c2fa8e04f21ea60a00a46e7e5a4f1823ff050542432a489a5c0202503d/online-valid.json";
-	// $path = "";
+	// $env = getEnvironment('environment.json',11);
 
 	// PHISH 2
-	// $url = "https://openphish.com";
-	// $path = "//*[@id=\'wrap\']/div[1]/table";
+	// $env = getEnvironment('environment.json',12);
 
 	// PHISH 3
-	$url = "http://hosts-file.net/?s=Browse&f=PSH";
-	$path = "/html/body/table[2]/tbody/tr/td/table/tbody/tr[3]/td/table[2]";
+	$env = getEnvironment('environment.json',13);
+	$url = $env->url;
+	$path = $env->xpath;
+	$doc = $env->documentType;
 
 	//Code to access YQL using PHP
-	$yql_query = "select * from html where url='".$url."/' and xpath='".$path."'";
+	$yql_query = "select * from ".$doc." where url='".$url."'".(($path == '') ? "" : " and xpath='".$path."'");
 
 	$result = getResultFromYQL(sprintf($yql_query),'store%3A%2F%2Fdatatables.org%2Falltableswithkeys');
 

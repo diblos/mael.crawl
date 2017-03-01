@@ -4,19 +4,19 @@
 	require('..\lib\lib.php');//HERE
 
 	// DEFACE 1
-	$url = "http://www.zone-h.org/archive/special=1";
-	$path = "//*[@id=\"ldeface\"]";
+	// $env = getEnvironment('environment.json',1);
 
 	// DEFACE 2
-	// $url = "http://www.hack-mirror.com/attacks.html";
-	// $path = "/html/body/div[4]/div[1]/div[10]/div[5]/div/div/div/div[2]/table";
+	$env = getEnvironment('environment.json',2);
 
 	// DEFACE 3
-	// $url = "http://zone-hc.org/archive-1.html";
-	// $path = "";
+	// $env = getEnvironment('environment.json',3);
+	$url = $env->url;
+	$path = $env->xpath;
+	$doc = $env->documentType;
 
 	//Code to access YQL using PHP
-	$yql_query = "select * from html where url='".$url."' and xpath='".$path."'";
+	$yql_query = "select * from ".$doc." where url='".$url."'".(($path == '') ? "" : " and xpath='".$path."'");
 
 	$result = getResultFromYQL(sprintf($yql_query),'store%3A%2F%2Fdatatables.org%2Falltableswithkeys');
 
