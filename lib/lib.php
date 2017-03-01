@@ -32,6 +32,24 @@ function queryEnvironment($env){
   }
 }
 
+function log_defacement($item){
+  $d = strtotime($item->listdate);
+  // echo ">>$d".PHP_EOL;
+	$db = connect_db();
+	$query=mysqli_query($db,"REPLACE INTO defacement (attacker,team,homepage_deface,mass_deface,re_deface,special_deface,location,domain,os,listdate) VALUES ('$item->attacker' , '$item->team','$item->homepage_deface','$item->mass_deface','$item->re_deface','$item->special_deface','$item->location','$item->domain','$item->os',from_unixtime($d));");
+  // $query=mysqli_query($db,"REPLACE INTO defacement (attacker,team,location,domain,os) VALUES ('$item->attacker' , '$item->team','$item->location','$item->domain','$item->os');");
+	$db->close();
+}
+
+function log_phishing($item){
+  $d = strtotime($item->listdate);
+  // echo ">>$d".PHP_EOL;
+	$db = connect_db();
+	$query=mysqli_query($db,"REPLACE INTO phishing (url,ip,target_brand,listdate) VALUES ('$item->url' , '$item->ip','$item->target_brand',from_unixtime($d));");
+  // $query=mysqli_query($db,"REPLACE INTO phishing (url,ip,target_brand,listdate) VALUES ('$item->url' , '$item->ip','$item->target_brand',now());");
+	$db->close();
+}
+
 function log_botnet($item){
 	$db = connect_db();
 	$query=mysqli_query($db,"REPLACE INTO botnet (title,link,description,guid) VALUES ('$item->title' , '$item->link','$item->description','$item->guid');");
@@ -39,8 +57,16 @@ function log_botnet($item){
 }
 
 function log_spam($item){
+  $d = strtotime($item->latest_activity);
 	$db = connect_db();
-	$query=mysqli_query($db,"REPLACE INTO spam (ip,host,country,latest_type_threat,total_website,total_browser,latest_activity) VALUES ('$item->ip' , '$item->host','$item->country','$item->latest_type_threat','$item->total_website','$item->total_browser','$item->latest_activity');");
+	$query=mysqli_query($db,"REPLACE INTO spam (ip,host,country,latest_type_threat,total_website,total_browser,latest_activity) VALUES ('$item->ip' , '$item->host','$item->country','$item->latest_type_threat','$item->total_website','$item->total_browser',from_unixtime($d));");
+	$db->close();
+}
+
+function log_malmware($item){
+  $d = strtotime($item->listdate);
+	$db = connect_db();
+	$query=mysqli_query($db,"REPLACE INTO malmware (domain,ip,r_lookup,description,registrant,asn,country,listdate) VALUES ('$item->domain' , '$item->ip','$item->reverse_lookup','$item->description','$item->registrant','$item->asn','$item->country',from_unixtime($d));");
 	$db->close();
 }
 
@@ -192,6 +218,30 @@ function SETTLEDATE($txt){
 
 function ProcessResult($result,$id){
     switch ($id) {
+      case 2:// DEFACEMENT
+          $r = new stdClass();
+          $r = json_decode($result);
+          $r = new DefacementObj02(json_decode($result));
+
+          // echo (json_encode($r));
+          foreach($r->query->results->item AS $mydata)
+          {
+              log_defacement($mydata);
+          }
+
+          break;
+      case 8:// MALMWARE
+          $r = new stdClass();
+          $r = json_decode($result);
+          $r = new MalmwareObj08(json_decode($result));
+
+          // echo (json_encode($r));
+          foreach($r->query->results->item AS $mydata)
+          {
+              log_malmware($mydata);
+          }
+
+          break;
       case 9:// BOTNET
           $r = new stdClass();
           $r = json_decode($result);
@@ -217,6 +267,18 @@ function ProcessResult($result,$id){
           }
 
           break;
+      case 13:// PHISHING
+          $r = new stdClass();
+          $r = json_decode($result);
+          $r = new PhishingObj13(json_decode($result));
+
+          // echo (json_encode($r));
+          foreach($r->query->results->item AS $mydata)
+          {
+              log_phishing($mydata);
+          }
+
+          break;
       case 14:// SPAM
           $r = new stdClass();
           $r = json_decode($result);
@@ -232,10 +294,168 @@ function ProcessResult($result,$id){
           echo($result);
     }
 }
+
+// DEFACEMENT 2
+class DefacementObj02 {
+    public function __construct($obj) {
+        $rs = array();
+        $c1 = 0;
+        foreach($obj->query->results->table->tbody->tr AS $mydata)
+        {
+            // if(($c1>1)&&($c1<=101)){
+                $c=0;
+                $r = new stdClass();
+                foreach($mydata->td AS $mymy){
+                  switch ($c) {
+                    case 0:
+                        // $r->url = implode(" ", explode("_",$mymy->nobr));
+                        $r->listdate = $mymy;
+                        break;
+                    case 1:
+                        // $r->url = implode(" ", explode("_",$mymy->nobr));
+                        $r->attacker = $mymy->a->content;
+                        break;
+                    case 2:
+                        // $r->ip = ($mymy->content) ? $mymy->content : $mymy;
+                        $r->team = $mymy->a->content;
+                        break;
+                    case 3:
+                        $r->homepage_deface = $mymy->content;
+                        break;
+                    case 4:
+                        $r->mass_deface = $mymy->content;
+                        break;
+                    case 5:
+                        $r->re_deface = $mymy->content;
+                        break;
+                    case 6:
+                        $r->location = $mymy->img->title;
+                        break;
+                    case 7:
+                        $r->special_deface = $mymy->content;
+                        break;
+                    case 8:
+                        $r->domain = ($mymy->content) ? $mymy->content : $mymy;
+                        break;
+                    case 9:
+                        $r->os = ($mymy->content) ? $mymy->content : $mymy;
+                        break;
+                    default:
+                        // do nothing;
+                  }
+                  $c++;
+                }
+                array_push($rs, $r);
+            // }
+            $c1++;
+        }
+
+        $this->query->count = count($rs);
+        $this->query->created = $obj->query->created;
+        $this->query->lang = $obj->query->lang;
+        // $this->query->results->item = $obj->query->results->table->tbody->tr;
+        $this->query->results->item = $rs;
+    }
+}
+
+// PHISHING 13
+class PhishingObj13 {
+    public function __construct($obj) {
+        $rs = array();
+        $c1 = 0;
+        foreach($obj->query->results->table->tbody->tr AS $mydata)
+        {
+            if(($c1>1)&&($c1<=101)){
+                $c=0;
+                $r = new stdClass();
+                foreach($mydata->td AS $mymy){
+                  switch ($c) {
+                    case 1:
+                        // $r->url = implode(" ", explode("_",$mymy->nobr));
+                        $r->url = $mymy->a->content;
+                        break;
+                    case 2:
+                        // $r->ip = ($mymy->content) ? $mymy->content : $mymy;
+                        $r->ip = $mymy->a->content;
+                        break;
+                    case 3:
+                        $r->target_brand = null;//($mymy->content) ? $mymy->content : $mymy;
+                        break;
+                    case 4:
+                        $r->listdate = ($mymy->content) ? $mymy->content : $mymy;
+                        break;
+                    default:
+                        // do nothing;
+                  }
+                  $c++;
+                }
+                array_push($rs, $r);
+            }
+            $c1++;
+        }
+
+        $this->query->count = count($rs);
+        $this->query->created = $obj->query->created;
+        $this->query->lang = $obj->query->lang;
+        // $this->query->results->item = $obj->query->results->table->tbody->tr;
+        $this->query->results->item = $rs;
+    }
+}
+
+// MALMWARE 8
+class MalmwareObj08 {
+    public function __construct($obj) {
+        $rs = array();
+        foreach($obj->query->results->table->tbody->tr AS $mydata)
+        {
+            if($mydata->class!="tabletitle"){
+                $c=0;
+                $r = new stdClass();
+                foreach($mydata->td AS $mymy){
+                  switch ($c) {
+                    case 0:
+                        $r->listdate = implode(" ", explode("_",$mymy->nobr));
+                        break;
+                    case 1:
+                        $r->domain = ($mymy->content) ? $mymy->content : $mymy;
+                        break;
+                    case 2:
+                        $r->ip = ($mymy->content) ? $mymy->content : $mymy;
+                        break;
+                    case 3:
+                        $r->reverse_lookup = ($mymy->content) ? $mymy->content : $mymy;
+                        break;
+                    case 4:
+                        $r->description = ($mymy->content) ? $mymy->content : $mymy;
+                        break;
+                    case 5:
+                        $r->registrant = ($mymy->content) ? $mymy->content : $mymy;
+                        break;
+                    case 6:
+                        $r->asn = ($mymy->content) ? $mymy->content : $mymy;
+                        break;
+                    case 7:
+                        $r->country = $mymy->img->title;
+                        break;
+                    default:
+                        // do nothing;
+                  }
+                  $c++;
+                }
+                array_push($rs, $r);
+            }
+        }
+        $this->query->count = count($rs);
+        $this->query->created = $obj->query->created;
+        $this->query->lang = $obj->query->lang;
+        // $this->query->results->item = $obj->query->results->table->tbody->tr;
+        $this->query->results->item = $rs;
+    }
+}
+
 // SPAM 14
 class SpamObj14 {
     public function __construct($obj) {
-
         $rs = array();
         foreach($obj->query->results->table->tbody->tr AS $mydata)
         {
@@ -269,7 +489,7 @@ class SpamObj14 {
                           $r->latest_activity = $mymy->content;
                           break;
                       default:
-                          // echo($result);
+                          // do nothing;
                     }
                     $c++;
                     unset($mymy->class);
@@ -278,7 +498,6 @@ class SpamObj14 {
                     unset($mymy->br);
 
                 }
-                // $mydata->tdcount = $r;
                 array_push($rs, $r);
             }else{
                 unset($mydata);

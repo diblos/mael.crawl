@@ -1,6 +1,6 @@
 <?php
 	// DEFACEMENT
-
+	require('..\lib\connect.php');//HERE
 	require('..\lib\lib.php');//HERE
 
 	// DEFACE 1

@@ -1,6 +1,6 @@
 <?php
 // PHISHING
-
+	require('..\lib\connect.php');//HERE
 	require('..\lib\lib.php');//HERE
 
 	// PHISH 1

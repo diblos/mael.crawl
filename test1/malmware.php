@@ -1,6 +1,6 @@
 <?php
 // MALMWARE
-
+	require('..\lib\connect.php');//HERE
 	require('..\lib\lib.php');//HERE
 
 	// MALM 1
