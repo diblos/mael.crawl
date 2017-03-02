@@ -4,10 +4,10 @@
 	require('..\lib\lib.php');//HERE
 
 	// BOTNET 1
-	$crawl_id = 9;
+	$crawl_id = 9; // OK
 
 	// BOTNET 2
-	// $crawl_id = 10;
+	// $crawl_id = 10; // OK
 
 	$env = getEnvironment(ENV,$crawl_id);
 	$result = queryEnvironment($env);

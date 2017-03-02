@@ -4,7 +4,7 @@
 	require('..\lib\lib.php');//HERE
 
 	// SPAM 1
-	$crawl_id = 14;
+	$crawl_id = 14; // OK
 
 	$env = getEnvironment(ENV,$crawl_id);
 	$result = queryEnvironment($env);
