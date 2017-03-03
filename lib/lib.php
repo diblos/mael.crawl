@@ -230,6 +230,18 @@ function ProcessResult($result,$id){
           }
 
           break;
+      case 5:// MALMWARE
+          $r = new stdClass();
+          $r = json_decode($result);
+          $r = new MalmwareObj05(json_decode($result));
+
+          echo (json_encode($r));
+          // foreach($r->query->results->item AS $mydata)
+          // {
+          //     log_malmware($mydata);
+          // }
+
+          break;
       case 8:// MALMWARE
           $r = new stdClass();
           $r = json_decode($result);
@@ -264,6 +276,18 @@ function ProcessResult($result,$id){
           foreach($r->query->results->item AS $mydata)
           {
               log_botnet($mydata);
+          }
+
+          break;
+      case 12:// PHISHING
+          $r = new stdClass();
+          $r = json_decode($result);
+          $r = new PhishingObj12(json_decode($result));
+
+          // echo (json_encode($r));
+          foreach($r->query->results->item AS $mydata)
+          {
+              log_phishing($mydata);
           }
 
           break;
@@ -358,6 +382,52 @@ class DefacementObj02 {
     }
 }
 
+// PHISHING 12
+class PhishingObj12 {
+    public function __construct($obj) {
+        $rs = array();
+        $c1 = 0;
+        foreach($obj->query->results->table->tbody->tr AS $mydata)
+        {
+            // if(($c1>1)&&($c1<=101)){
+                $c=0;
+                $r = new stdClass();
+                foreach($mydata->td AS $mymy){
+                  switch ($c) {
+                    case 0:
+                        // $r->url = implode(" ", explode("_",$mymy->nobr));
+                        $r->url = $mymy->a->content;
+                        break;
+                    // case 1:
+                    //     // $r->ip = ($mymy->content) ? $mymy->content : $mymy;
+                    //     $r->ip = $mymy->a->content;
+                    //     break;
+                    case 1:
+                        $r->target_brand = ($mymy->content) ? $mymy->content : $mymy;
+                        break;
+                    case 2:
+                        $r->listdate = gmdate("Y-m-d ") . $mymy;
+                        break;
+                    default:
+                        // do nothing;
+                  }
+                  $c++;
+                }
+                array_push($rs, $r);
+            // }
+            $c1++;
+        }
+
+
+
+        $this->query->count = count($rs);
+        $this->query->created = $obj->query->created;
+        $this->query->lang = $obj->query->lang;
+        // $this->query->results->item = $obj->query->results->table->tbody->tr;
+        $this->query->results->item = $rs;
+    }
+}
+
 // PHISHING 13
 class PhishingObj13 {
     public function __construct($obj) {
@@ -399,6 +469,59 @@ class PhishingObj13 {
         $this->query->lang = $obj->query->lang;
         // $this->query->results->item = $obj->query->results->table->tbody->tr;
         $this->query->results->item = $rs;
+    }
+}
+
+// MALMWARE 5
+class MalmwareObj05 {
+    public function __construct($obj) {
+        $rs = array();
+        foreach($obj->query->results->table->tbody->tr AS $mydata)
+        {
+            if($mydata->tr!="tabletitle"){
+                $c=0;
+                $r = new stdClass();
+                foreach($mydata->td AS $mymy){
+                  switch ($c) {
+                    case 0:
+                        $r->listdate = $mymy->a;
+                        break;
+                    case 1:
+                        $r->domain = ($mymy->content) ? $mymy->content : $mymy;
+                        break;
+                    case 2:
+                        $r->md5 = ($mymy->content) ? $mymy->content : $mymy;
+                        break;
+                    case 3:
+                        $r->ip = ($mymy->content) ? $mymy->content : $mymy;
+                        break;
+                    case 4:
+                        $r->tool = ($mymy->content) ? $mymy->content : $mymy;
+                        break;
+                    // case 5:
+                    //     $r->registrant = ($mymy->content) ? $mymy->content : $mymy;
+                    //     break;
+                    // case 6:
+                    //     $r->asn = ($mymy->content) ? $mymy->content : $mymy;
+                    //     break;
+                    // case 7:
+                    //     $r->country = $mymy->img->title;
+                    //     break;
+                    default:
+                        // do nothing;
+                  }
+                  $c++;
+                }
+                array_push($rs, $r);
+            }
+        }
+        $this->query->results->itemXX = $rs;
+
+        $this->query->count = count($rs);
+        $this->query->created = $obj->query->created;
+        $this->query->lang = $obj->query->lang;
+        $this->query->results->item = $obj->query->results->table->tbody->tr;
+
     }
 }
 

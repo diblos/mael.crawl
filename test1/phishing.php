@@ -4,10 +4,10 @@
 	require('..\lib\lib.php');//HERE
 
 	// PHISH 1
-	$crawl_id = 11;
+	// $crawl_id = 11;// JSON
 
 	// PHISH 2
-	// $crawl_id = 12; // --
+	$crawl_id = 12; // OK
 
 	// PHISH 3
 	// $crawl_id = 13; // OK
