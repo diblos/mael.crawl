@@ -230,10 +230,44 @@ function ProcessResult($result,$id){
           }
 
           break;
+      case 4:// MALMWARE
+          $r = new stdClass();
+          $r = json_decode($result);
+          $r = new MalmwareObj04(json_decode($result));
+          echo (json_encode($r));
+          // foreach($r->query->results->item AS $mydata)
+          // {
+          //     log_malmware($mydata);
+          // }
+          break;
       case 5:// MALMWARE
           $r = new stdClass();
           $r = json_decode($result);
           $r = new MalmwareObj05(json_decode($result));
+
+          echo (json_encode($r));
+          // foreach($r->query->results->item AS $mydata)
+          // {
+          //     log_malmware($mydata);
+          // }
+
+          break;
+      case 6:// MALMWARE
+          $r = new stdClass();
+          $r = json_decode($result);
+          $r = new MalmwareObj06(json_decode($result));
+
+          echo (json_encode($r));
+          // foreach($r->query->results->item AS $mydata)
+          // {
+          //     log_malmware($mydata);
+          // }
+
+          break;
+      case 7:// MALMWARE
+          $r = new stdClass();
+          $r = json_decode($result);
+          $r = new MalmwareObj07(json_decode($result));
 
           echo (json_encode($r));
           // foreach($r->query->results->item AS $mydata)
@@ -417,9 +451,6 @@ class PhishingObj12 {
             // }
             $c1++;
         }
-
-
-
         $this->query->count = count($rs);
         $this->query->created = $obj->query->created;
         $this->query->lang = $obj->query->lang;
@@ -472,31 +503,93 @@ class PhishingObj13 {
     }
 }
 
-// MALMWARE 5
-class MalmwareObj05 {
+// MALMWARE 4
+class MalmwareObj04 {
     public function __construct($obj) {
         $rs = array();
+        $c1 = 0;
         foreach($obj->query->results->table->tbody->tr AS $mydata)
         {
-            if($mydata->tr!="tabletitle"){
-                $c=0;
+            if($c1>0){
+                $c2=0;
                 $r = new stdClass();
                 foreach($mydata->td AS $mymy){
-                  switch ($c) {
+                  switch ($c2) {
                     case 0:
-                        $r->listdate = $mymy->a;
+                        $r->listdate = $mymy;
                         break;
                     case 1:
                         $r->domain = ($mymy->content) ? $mymy->content : $mymy;
                         break;
                     case 2:
-                        $r->md5 = ($mymy->content) ? $mymy->content : $mymy;
+                        // $r->ip = ($mymy->content) ? $mymy->content : $mymy;
+                        $r->ip = $mymy->a->content;
                         break;
                     case 3:
-                        $r->ip = ($mymy->content) ? $mymy->content : $mymy;
+                        // $r->country = ($mymy->content) ? $mymy->content : $mymy;
+                        $r->country = $mymy->a->content;
                         break;
                     case 4:
-                        $r->tool = ($mymy->content) ? $mymy->content : $mymy;
+                        // $r->asn = ($mymy->content) ? $mymy->content : $mymy;
+                        $r->asn = $mymy->a->content;
+                        break;
+                    case 5:
+                        // $r->AutonomousSystemName = ($mymy->content) ? $mymy->content : $mymy;
+                        $r->AutonomousSystemName = $mymy->a->content;
+                        break;
+                    case 6:
+                        // $r->md5 = ($mymy->content) ? $mymy->content : $mymy;
+                        $r->md5 = $mymy->a->content;
+                        break;
+                    default:
+                        // do nothing;
+                  }
+                  $c2++;
+                }
+                array_push($rs, $r);
+            }
+            $c1++;
+        }
+        $this->query->count = count($rs);
+        $this->query->created = $obj->query->created;
+        $this->query->lang = $obj->query->lang;
+        // $this->query->results->item = $obj->query->results->table->tbody->tr;
+        $this->query->results->item = $rs;
+    }
+}
+
+// MALMWARE 5
+class MalmwareObj05 {
+    public function __construct($obj) {
+        $rs = array();
+        $c1 = 0;
+        foreach($obj->query->results->table->tbody->tr AS $mydata)
+        {
+            if($c1>0){
+                $c2=0;
+                $r = new stdClass();
+                foreach($mydata->td AS $mymy){
+                  switch ($c2) {
+                    case 0:
+                        $r->listdate = strftime(gmdate("Y")."-").$mymy->a->content;
+                        break;
+                    case 1:
+                        // $r->domain = ($mymy->content) ? $mymy->content : $mymy;
+                        $r->domain = $mymy->a[1]->content;
+                        break;
+                    case 2:
+                        // $r->md5 = ($mymy->content) ? $mymy->content : $mymy;
+                        $r->md5 = $mymy->a->content;
+                        break;
+                    case 3:
+                        // $r->ip = ($mymy->content) ? $mymy->content : $mymy;
+                        $r->ip = $mymy->a->content;
+                        break;
+                    case 4:
+                        // LINKS TO PEDUMP & URL QUERY
+                        // $r->tool = ($mymy->content) ? $mymy->content : $mymy;
+                        $r->tool->PED = $mymy->a[0]->href;
+                        $r->tool->UQ = $mymy->a[1]->href;
                         break;
                     // case 5:
                     //     $r->registrant = ($mymy->content) ? $mymy->content : $mymy;
@@ -510,18 +603,105 @@ class MalmwareObj05 {
                     default:
                         // do nothing;
                   }
+                  $c2++;
+                }
+                array_push($rs, $r);
+            }
+            $c1++;
+        }
+        $this->query->count = count($rs);
+        $this->query->created = $obj->query->created;
+        $this->query->lang = $obj->query->lang;
+        // $this->query->results->item = $obj->query->results->table->tbody->tr;
+        $this->query->results->item = $rs;
+    }
+}
+
+// MALMWARE 6
+class MalmwareObj06 {
+    public function __construct($obj) {
+        $rs = array();
+        $c1 = 0;
+        foreach($obj->query->results->table->tbody->tr AS $mydata)
+        {
+            if(($c1>1)&&($c1<=101)){
+                $c=0;
+                $r = new stdClass();
+                foreach($mydata->td AS $mymy){
+                  switch ($c) {
+                    case 1:
+                        $r->domain = $mymy->a->content;
+                        break;
+                    case 2:
+                        // $r->ip = ($mymy->content) ? $mymy->content : $mymy;
+                        $r->ip = $mymy->a->content;
+                        break;
+                    case 3:
+                        // $r->target_brand = ($mymy->content) ? $mymy->content : $mymy;
+                        $r->class = $mymy->a->content;
+                        break;
+                    case 4:
+                        $r->listdate = ($mymy->content) ? $mymy->content : $mymy;
+                        break;
+                    default:
+                        // do nothing;
+                  }
                   $c++;
                 }
                 array_push($rs, $r);
             }
+            $c1++;
         }
-        $this->query->results->itemXX = $rs;
 
         $this->query->count = count($rs);
         $this->query->created = $obj->query->created;
         $this->query->lang = $obj->query->lang;
-        $this->query->results->item = $obj->query->results->table->tbody->tr;
+        // $this->query->results->item = $obj->query->results->table->tbody->tr;
+        $this->query->results->item = $rs;
+    }
+}
 
+// MALMWARE 7
+class MalmwareObj07 {
+    public function __construct($obj) {
+        $rs = array();
+        $c1 = 0;
+        foreach($obj->query->results->table->tbody->tr AS $mydata)
+        {
+            if(($c1>1)&&($c1<=101)){
+                $c=0;
+                $r = new stdClass();
+                foreach($mydata->td AS $mymy){
+                  switch ($c) {
+                    case 1:
+                        $r->domain = $mymy->a->content;
+                        break;
+                    case 2:
+                        // $r->ip = ($mymy->content) ? $mymy->content : $mymy;
+                        $r->ip = $mymy->a->content;
+                        break;
+                    case 3:
+                        // $r->target_brand = ($mymy->content) ? $mymy->content : $mymy;
+                        $r->class = $mymy->a->content;
+                        break;
+                    case 4:
+                        $r->listdate = ($mymy->content) ? $mymy->content : $mymy;
+                        break;
+                    default:
+                        // do nothing;
+                  }
+                  $c++;
+                }
+                array_push($rs, $r);
+            }
+            $c1++;
+        }
+
+        $this->query->count = count($rs);
+        $this->query->created = $obj->query->created;
+        $this->query->lang = $obj->query->lang;
+        // $this->query->results->item = $obj->query->results->table->tbody->tr;
+        $this->query->results->item = $rs;
     }
 }
 

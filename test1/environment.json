@@ -27,7 +27,7 @@
   "id":4,
   "url":"http://malc0de.com/database/",
   "object":"*",
-  "xpath":"/html/body/font/center/table",
+  "xpath":"//*[@class=\"prettytable\"]",
   "documentType":"html",
   "category":"malmware"
 },
