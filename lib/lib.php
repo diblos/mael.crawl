@@ -3,6 +3,12 @@
 define("ENV", "environment.json", true);
 define("YAPI", "http://query.yahooapis.com/v1/public/yql", true);
 
+define("CAT_DEFACEMENT", "defacement", true);
+define("CAT_MALMWARE", "malmware", true);
+define("CAT_BOTNET", "botnet", true);
+define("CAT_PHISHING", "phishing", true);
+define("CAT_SPAM", "spam", true);
+
 ini_set('error_reporting', E_ERROR);
 ini_set('display_errors', '1');
 ini_set('date.timezone', 'Asia/Kuala_Lumpur');
@@ -16,6 +22,17 @@ function getEnvironment($url,$listcode)
     $json =json_decode($contents);
     // var_dump($json[$listcode-1]);
     return $json[$listcode-1];
+}
+
+function getEnvironments($url,$category)
+{
+    $tmp  = array();
+    $contents = file_get_contents($url);
+    $json =json_decode($contents);
+    foreach ($json as $value){
+      if($value->category==$category) array_push($tmp,$value);      
+    }
+    return $tmp;
 }
 
 function queryEnvironment($env){
