@@ -4,13 +4,13 @@
 	require('..\lib\lib.php');//HERE
 
 //======================================================= test
-	$crawl_id = 4; // MALM 1 - OK - db not OK
+	// $crawl_id = 4; // MALM 1 - OK
 
-	// $crawl_id = 5; // MALM 2 - OK - db not OK
+	// $crawl_id = 5; // MALM 2 - OK
 
-	// $crawl_id = 6; // MALM 3 - OK - db not OK
+	$crawl_id = 6; // MALM 3 - OK - db not OK
 
-	// $crawl_id = 7; // MALM 4 - OK - db not OK
+	// $crawl_id = 7; // MALM 4 - OK
 
 	// $crawl_id = 8; // MALM 5 - OK
 

@@ -30,7 +30,7 @@ function getEnvironments($url,$category)
     $contents = file_get_contents($url);
     $json =json_decode($contents);
     foreach ($json as $value){
-      if($value->category==$category) array_push($tmp,$value);      
+      if($value->category==$category) array_push($tmp,$value);
     }
     return $tmp;
 }
@@ -82,8 +82,11 @@ function log_spam($item){
 
 function log_malmware($item){
   $d = strtotime($item->listdate);
+  $ped = $item->tool->PED;
+  $uq = $item->tool->UQ;
 	$db = connect_db();
-	$query=mysqli_query($db,"REPLACE INTO malmware (domain,ip,r_lookup,description,registrant,asn,country,listdate) VALUES ('$item->domain' , '$item->ip','$item->reverse_lookup','$item->description','$item->registrant','$item->asn','$item->country',from_unixtime($d));");
+	// $query=mysqli_query($db,"REPLACE INTO malmware (domain,ip,r_lookup,description,registrant,asn,country,listdate) VALUES ('$item->domain' , '$item->ip','$item->reverse_lookup','$item->description','$item->registrant','$item->asn','$item->country',from_unixtime($d));");
+  $query=mysqli_query($db,"REPLACE INTO malmware (domain,ip,r_lookup,description,registrant,asn,asname,country,md5,PED,UQ,listdate) VALUES ('$item->domain' , '$item->ip','$item->reverse_lookup','$item->description','$item->registrant','$item->asn','$item->AutonomousSystemName','$item->country','$item->md5','$ped','$uq',from_unixtime($d));");
 	$db->close();
 }
 
@@ -126,10 +129,10 @@ function ProcessResult($result,$id){
           $r = json_decode($result);
           $r = new MalmwareObj04(json_decode($result));
           echo (json_encode($r));
-          // foreach($r->query->results->item AS $mydata)
-          // {
-          //     log_malmware($mydata);
-          // }
+          foreach($r->query->results->item AS $mydata)
+          {
+              log_malmware($mydata);
+          }
           break;
       case 5:// MALMWARE
           $r = new stdClass();
@@ -137,10 +140,10 @@ function ProcessResult($result,$id){
           $r = new MalmwareObj05(json_decode($result));
 
           echo (json_encode($r));
-          // foreach($r->query->results->item AS $mydata)
-          // {
-          //     log_malmware($mydata);
-          // }
+          foreach($r->query->results->item AS $mydata)
+          {
+              log_malmware($mydata);
+          }
 
           break;
       case 6:// MALMWARE
@@ -149,10 +152,10 @@ function ProcessResult($result,$id){
           $r = new MalmwareObj06(json_decode($result));
 
           echo (json_encode($r));
-          // foreach($r->query->results->item AS $mydata)
-          // {
-          //     log_malmware($mydata);
-          // }
+          foreach($r->query->results->item AS $mydata)
+          {
+              log_malmware($mydata);
+          }
 
           break;
       case 7:// MALMWARE
@@ -161,10 +164,10 @@ function ProcessResult($result,$id){
           $r = new MalmwareObj07(json_decode($result));
 
           echo (json_encode($r));
-          // foreach($r->query->results->item AS $mydata)
-          // {
-          //     log_malmware($mydata);
-          // }
+          foreach($r->query->results->item AS $mydata)
+          {
+              log_malmware($mydata);
+          }
 
           break;
       case 8:// MALMWARE
@@ -172,7 +175,7 @@ function ProcessResult($result,$id){
           $r = json_decode($result);
           $r = new MalmwareObj08(json_decode($result));
 
-          // echo (json_encode($r));
+          echo (json_encode($r));
           foreach($r->query->results->item AS $mydata)
           {
               log_malmware($mydata);
@@ -524,12 +527,11 @@ class MalmwareObj06 {
                         $r->domain = $mymy->a->content;
                         break;
                     case 2:
-                        // $r->ip = ($mymy->content) ? $mymy->content : $mymy;
                         $r->ip = $mymy->a->content;
                         break;
                     case 3:
-                        // $r->target_brand = ($mymy->content) ? $mymy->content : $mymy;
-                        $r->class = $mymy->a->content;
+                        // $r->class = $mymy->a->content;
+                        $r->description = 'class '.$mymy->a->content;
                         break;
                     case 4:
                         $r->listdate = ($mymy->content) ? $mymy->content : $mymy;
@@ -568,12 +570,11 @@ class MalmwareObj07 {
                         $r->domain = $mymy->a->content;
                         break;
                     case 2:
-                        // $r->ip = ($mymy->content) ? $mymy->content : $mymy;
                         $r->ip = $mymy->a->content;
                         break;
                     case 3:
-                        // $r->target_brand = ($mymy->content) ? $mymy->content : $mymy;
-                        $r->class = $mymy->a->content;
+                        // $r->class = $mymy->a->content;
+                        $r->description = 'class '.$mymy->a->content;
                         break;
                     case 4:
                         $r->listdate = ($mymy->content) ? $mymy->content : $mymy;

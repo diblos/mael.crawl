@@ -19,7 +19,7 @@ USE `crawldev`;
 CREATE TABLE IF NOT EXISTS `botnet` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(50) NOT NULL,
-  `link` varchar(100) NOT NULL,
+  `link` varchar(200) NOT NULL,
   `description` varchar(200) NOT NULL,
   `guid` varchar(50) NOT NULL,
   `inserted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -53,13 +53,17 @@ CREATE TABLE IF NOT EXISTS `defacement` (
 -- Dumping structure for table crawldev.malmware
 CREATE TABLE IF NOT EXISTS `malmware` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `domain` varchar(100) NOT NULL,
+  `domain` varchar(150) NOT NULL,
   `ip` varchar(50) NOT NULL,
-  `r_lookup` varchar(100) NOT NULL,
+  `r_lookup` varchar(100) NOT NULL COMMENT 'reverse lookup',
   `description` varchar(200) NOT NULL,
   `registrant` varchar(100) NOT NULL,
   `asn` int(11) NOT NULL,
+  `asname` varchar(100) NOT NULL COMMENT 'autonomous system name',
   `country` varchar(50) NOT NULL,
+  `md5` varchar(50) DEFAULT NULL,
+  `PED` varchar(150) DEFAULT NULL COMMENT 'Tool: PE Dump',
+  `UQ` varchar(150) DEFAULT NULL COMMENT 'Tool: URL Query',
   `listdate` timestamp NULL DEFAULT NULL,
   `inserted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE KEY `id` (`id`)
@@ -71,7 +75,7 @@ CREATE TABLE IF NOT EXISTS `malmware` (
 -- Dumping structure for table crawldev.phishing
 CREATE TABLE IF NOT EXISTS `phishing` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `url` varchar(200) NOT NULL,
+  `url` varchar(300) NOT NULL,
   `ip` varchar(50) NOT NULL,
   `target_brand` varchar(50) NOT NULL,
   `listdate` timestamp NULL DEFAULT NULL,
@@ -86,7 +90,7 @@ CREATE TABLE IF NOT EXISTS `phishing` (
 CREATE TABLE IF NOT EXISTS `spam` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ip` varchar(50) NOT NULL,
-  `host` varchar(100) NOT NULL,
+  `host` varchar(150) NOT NULL,
   `country` varchar(200) NOT NULL,
   `latest_type_threat` varchar(50) NOT NULL,
   `total_website` varchar(50) NOT NULL,
