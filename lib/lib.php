@@ -15,6 +15,15 @@ ini_set('date.timezone', 'Asia/Kuala_Lumpur');
 // ini_set('date.timezone', 'UTC');
 
 ini_set('always_populate_raw_post_data', '-1');//PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
+$country_names = json_decode(file_get_contents("http://country.io/names.json"), true);
+
+function getCountryName($code)
+{
+    global $country_names;
+    if( strtoupper($code) == 'UK' ) return $country_names['GB'];// UK or GB for United Kingdom of The Great Britain
+    elseif( !$country_names[strtoupper($code)] ) return $code;
+    else return $country_names[strtoupper($code)];
+}
 
 function getEnvironment($url,$listcode)
 {
@@ -51,10 +60,9 @@ function queryEnvironment($env){
 
 function log_defacement($item){
   $d = strtotime($item->listdate);
-  // echo ">>$d".PHP_EOL;
+  $country = getCountryName($item->location);
 	$db = connect_db();
-	$query=mysqli_query($db,"REPLACE INTO defacement (attacker,team,homepage_deface,mass_deface,re_deface,special_deface,location,domain,os,listdate) VALUES ('$item->attacker' , '$item->team','$item->homepage_deface','$item->mass_deface','$item->re_deface','$item->special_deface','$item->location','$item->domain','$item->os',from_unixtime($d));");
-  // $query=mysqli_query($db,"REPLACE INTO defacement (attacker,team,location,domain,os) VALUES ('$item->attacker' , '$item->team','$item->location','$item->domain','$item->os');");
+	$query=mysqli_query($db,"REPLACE INTO defacement (attacker,team,homepage_deface,mass_deface,re_deface,special_deface,location,domain,os,listdate) VALUES ('$item->attacker' , '$item->team','$item->homepage_deface','$item->mass_deface','$item->re_deface','$item->special_deface','$country','$item->domain','$item->os',from_unixtime($d));");
 	$db->close();
 }
 
@@ -63,7 +71,6 @@ function log_phishing($item){
   // echo ">>$d".PHP_EOL;
 	$db = connect_db();
 	$query=mysqli_query($db,"REPLACE INTO phishing (url,ip,target_brand,listdate) VALUES ('$item->url' , '$item->ip','$item->target_brand',from_unixtime($d));");
-  // $query=mysqli_query($db,"REPLACE INTO phishing (url,ip,target_brand,listdate) VALUES ('$item->url' , '$item->ip','$item->target_brand',now());");
 	$db->close();
 }
 
@@ -75,8 +82,9 @@ function log_botnet($item){
 
 function log_spam($item){
   $d = strtotime($item->latest_activity);
+  $country = getCountryName($item->country);
 	$db = connect_db();
-	$query=mysqli_query($db,"REPLACE INTO spam (ip,host,country,latest_type_threat,total_website,total_browser,latest_activity) VALUES ('$item->ip' , '$item->host','$item->country','$item->latest_type_threat','$item->total_website','$item->total_browser',from_unixtime($d));");
+	$query=mysqli_query($db,"REPLACE INTO spam (ip,host,country,latest_type_threat,total_website,total_browser,latest_activity) VALUES ('$item->ip' , '$item->host','$country','$item->latest_type_threat','$item->total_website','$item->total_browser',from_unixtime($d));");
 	$db->close();
 }
 
@@ -84,9 +92,9 @@ function log_malmware($item){
   $d = strtotime($item->listdate);
   $ped = $item->tool->PED;
   $uq = $item->tool->UQ;
+  $country = getCountryName($item->country);
 	$db = connect_db();
-	// $query=mysqli_query($db,"REPLACE INTO malmware (domain,ip,r_lookup,description,registrant,asn,country,listdate) VALUES ('$item->domain' , '$item->ip','$item->reverse_lookup','$item->description','$item->registrant','$item->asn','$item->country',from_unixtime($d));");
-  $query=mysqli_query($db,"REPLACE INTO malmware (domain,ip,r_lookup,description,registrant,asn,asname,country,md5,PED,UQ,listdate) VALUES ('$item->domain' , '$item->ip','$item->reverse_lookup','$item->description','$item->registrant','$item->asn','$item->AutonomousSystemName','$item->country','$item->md5','$ped','$uq',from_unixtime($d));");
+  $query=mysqli_query($db,"REPLACE INTO malmware (domain,ip,r_lookup,description,registrant,asn,asname,country,md5,PED,UQ,listdate) VALUES ('$item->domain' , '$item->ip','$item->reverse_lookup','$item->description','$item->registrant','$item->asn','$item->AutonomousSystemName','$country','$item->md5','$ped','$uq',from_unixtime($d));");
 	$db->close();
 }
 
