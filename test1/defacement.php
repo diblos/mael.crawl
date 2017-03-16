@@ -12,11 +12,11 @@
 	//
 	// $env = getEnvironment(ENV,$crawl_id);
 	// $result = queryEnvironment($env);
-	// ProcessResult($result,$crawl_id);
+	// ProcessResult($result,$crawl_id,$env->url);
 	//======================================================= actual
 	$environments = getEnvironments(ENV,CAT_DEFACEMENT);
 	foreach ($environments as $env){
 		$result = queryEnvironment($env);
-		ProcessResult($result,$env->id);
+		ProcessResult($result,$env->id,$env->url);
 	}
 ?>

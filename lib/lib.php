@@ -11,8 +11,8 @@ define("CAT_SPAM", "spam", true);
 
 ini_set('error_reporting', E_ERROR);
 ini_set('display_errors', '1');
-ini_set('date.timezone', 'Asia/Kuala_Lumpur');
-// ini_set('date.timezone', 'UTC');
+// ini_set('date.timezone', 'Asia/Kuala_Lumpur');
+ini_set('date.timezone', 'UTC');
 
 ini_set('always_populate_raw_post_data', '-1');//PHP Deprecated:  Automatically populating $HTTP_RAW_POST_DATA is deprecated and will be removed in a future version. To avoid this warning set 'always_populate_raw_post_data' to '-1' in php.ini and use the php://input stream instead. in Unknown on line 0
 $country_names = json_decode(file_get_contents("http://country.io/names.json"), true);
@@ -58,43 +58,43 @@ function queryEnvironment($env){
   }
 }
 
-function log_defacement($item){
+function log_defacement($item,$source){
   $d = strtotime($item->listdate);
   $country = getCountryName($item->location);
 	$db = connect_db();
-	$query=mysqli_query($db,"REPLACE INTO defacement (attacker,team,homepage_deface,mass_deface,re_deface,special_deface,location,domain,os,listdate) VALUES ('$item->attacker' , '$item->team','$item->homepage_deface','$item->mass_deface','$item->re_deface','$item->special_deface','$country','$item->domain','$item->os',from_unixtime($d));");
+	$query=mysqli_query($db,"REPLACE INTO defacement (attacker,team,homepage_deface,mass_deface,re_deface,special_deface,location,domain,os,listdate,source) VALUES ('$item->attacker' , '$item->team','$item->homepage_deface','$item->mass_deface','$item->re_deface','$item->special_deface','$country','$item->domain','$item->os',from_unixtime($d),'$source');");
 	$db->close();
 }
 
-function log_phishing($item){
+function log_phishing($item,$source){
   $d = strtotime($item->listdate);
   // echo ">>$d".PHP_EOL;
 	$db = connect_db();
-	$query=mysqli_query($db,"REPLACE INTO phishing (url,ip,target_brand,listdate) VALUES ('$item->url' , '$item->ip','$item->target_brand',from_unixtime($d));");
+	$query=mysqli_query($db,"REPLACE INTO phishing (url,ip,target_brand,listdate,source) VALUES ('$item->url' , '$item->ip','$item->target_brand',from_unixtime($d),'$source');");
 	$db->close();
 }
 
-function log_botnet($item){
+function log_botnet($item,$source){
 	$db = connect_db();
-	$query=mysqli_query($db,"REPLACE INTO botnet (title,link,description,guid) VALUES ('$item->title' , '$item->link','$item->description','$item->guid');");
+	$query=mysqli_query($db,"REPLACE INTO botnet (title,link,description,guid,source) VALUES ('$item->title' , '$item->link','$item->description','$item->guid','$source');");
 	$db->close();
 }
 
-function log_spam($item){
+function log_spam($item,$source){
   $d = strtotime($item->latest_activity);
   $country = getCountryName($item->country);
 	$db = connect_db();
-	$query=mysqli_query($db,"REPLACE INTO spam (ip,host,country,latest_type_threat,total_website,total_browser,latest_activity) VALUES ('$item->ip' , '$item->host','$country','$item->latest_type_threat','$item->total_website','$item->total_browser',from_unixtime($d));");
+	$query=mysqli_query($db,"REPLACE INTO spam (ip,host,country,latest_type_threat,total_website,total_browser,latest_activity,source) VALUES ('$item->ip' , '$item->host','$country','$item->latest_type_threat','$item->total_website','$item->total_browser',from_unixtime($d),'$source');");
 	$db->close();
 }
 
-function log_malmware($item){
+function log_malmware($item,$source){
   $d = strtotime($item->listdate);
   $ped = $item->tool->PED;
   $uq = $item->tool->UQ;
   $country = getCountryName($item->country);
 	$db = connect_db();
-  $query=mysqli_query($db,"REPLACE INTO malmware (domain,ip,r_lookup,description,registrant,asn,asname,country,md5,PED,UQ,listdate) VALUES ('$item->domain' , '$item->ip','$item->reverse_lookup','$item->description','$item->registrant','$item->asn','$item->AutonomousSystemName','$country','$item->md5','$ped','$uq',from_unixtime($d));");
+  $query=mysqli_query($db,"REPLACE INTO malmware (domain,ip,r_lookup,description,registrant,asn,asname,country,md5,PED,UQ,listdate,source) VALUES ('$item->domain' , '$item->ip','$item->reverse_lookup','$item->description','$item->registrant','$item->asn','$item->AutonomousSystemName','$country','$item->md5','$ped','$uq',from_unixtime($d),'$source');");
 	$db->close();
 }
 
@@ -118,7 +118,7 @@ function getResultFromYQL($yql_query, $env = '') {
     return $json;
 }
 
-function ProcessResult($result,$id){
+function ProcessResult($result,$id,$source){
     switch ($id) {
       case 2:// DEFACEMENT
           $r = new stdClass();
@@ -128,7 +128,7 @@ function ProcessResult($result,$id){
           // echo (json_encode($r));
           foreach($r->query->results->item AS $mydata)
           {
-              log_defacement($mydata);
+              log_defacement($mydata,$source);
           }
 
           break;
@@ -139,7 +139,7 @@ function ProcessResult($result,$id){
           echo (json_encode($r));
           foreach($r->query->results->item AS $mydata)
           {
-              log_malmware($mydata);
+              log_malmware($mydata,$source);
           }
           break;
       case 5:// MALMWARE
@@ -150,7 +150,7 @@ function ProcessResult($result,$id){
           echo (json_encode($r));
           foreach($r->query->results->item AS $mydata)
           {
-              log_malmware($mydata);
+              log_malmware($mydata,$source);
           }
 
           break;
@@ -162,7 +162,7 @@ function ProcessResult($result,$id){
           echo (json_encode($r));
           foreach($r->query->results->item AS $mydata)
           {
-              log_malmware($mydata);
+              log_malmware($mydata,$source);
           }
 
           break;
@@ -174,7 +174,7 @@ function ProcessResult($result,$id){
           echo (json_encode($r));
           foreach($r->query->results->item AS $mydata)
           {
-              log_malmware($mydata);
+              log_malmware($mydata,$source);
           }
 
           break;
@@ -186,7 +186,7 @@ function ProcessResult($result,$id){
           echo (json_encode($r));
           foreach($r->query->results->item AS $mydata)
           {
-              log_malmware($mydata);
+              log_malmware($mydata,$source);
           }
 
           break;
@@ -198,7 +198,7 @@ function ProcessResult($result,$id){
           // echo (json_encode($r));
           foreach($r->query->results->item AS $mydata)
           {
-              log_botnet($mydata);
+              log_botnet($mydata,$source);
               // echo($mydata->link.PHP_EOL);
           }
 
@@ -211,7 +211,7 @@ function ProcessResult($result,$id){
           // echo (json_encode($r));
           foreach($r->query->results->item AS $mydata)
           {
-              log_botnet($mydata);
+              log_botnet($mydata,$source);
           }
 
           break;
@@ -223,7 +223,7 @@ function ProcessResult($result,$id){
           // echo (json_encode($r));
           foreach($r->query->results->item AS $mydata)
           {
-              log_phishing($mydata);
+              log_phishing($mydata,$source);
           }
 
           break;
@@ -235,7 +235,7 @@ function ProcessResult($result,$id){
           // echo (json_encode($r));
           foreach($r->query->results->item AS $mydata)
           {
-              log_phishing($mydata);
+              log_phishing($mydata,$source);
           }
 
           break;
@@ -247,7 +247,7 @@ function ProcessResult($result,$id){
           // echo (json_encode($r));
           foreach($r->query->results->item AS $mydata)
           {
-              log_spam($mydata);
+              log_spam($mydata,$source);
           }
           break;
       default:
