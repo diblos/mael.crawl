@@ -2,6 +2,7 @@
 
 define("ENV", "environment.json", true);
 define("YAPI", "http://query.yahooapis.com/v1/public/yql", true);
+define("ECRIME_KEY","316cf83833bf8d08e26329a3bc4b64860cf3b3f4",true);
 
 define("CAT_DEFACEMENT", "defacement", true);
 define("CAT_MALMWARE", "malmware", true);
@@ -70,7 +71,7 @@ function log_phishing($item,$source){
   $d = strtotime($item->listdate);
   // echo ">>$d".PHP_EOL;
 	$db = connect_db();
-	$query=mysqli_query($db,"REPLACE INTO phishing (url,ip,target_brand,listdate,source) VALUES ('$item->url' , '$item->ip','$item->target_brand',from_unixtime($d),'$source');");
+	$query=mysqli_query($db,"REPLACE INTO phishing (url,ip,domain,target_brand,listdate,source) VALUES ('$item->url' , '$item->ip','$item->domain','$item->target_brand',from_unixtime($d),'$source');");
 	$db->close();
 }
 
@@ -122,7 +123,7 @@ function ProcessResult($result,$id,$source){
     switch ($id) {
       case 2:// DEFACEMENT
           $r = new stdClass();
-          $r = json_decode($result);
+          // $r = json_decode($result);
           $r = new DefacementObj02(json_decode($result));
 
           // echo (json_encode($r));
@@ -134,7 +135,7 @@ function ProcessResult($result,$id,$source){
           break;
       case 4:// MALMWARE
           $r = new stdClass();
-          $r = json_decode($result);
+          // $r = json_decode($result);
           $r = new MalmwareObj04(json_decode($result));
           echo (json_encode($r));
           foreach($r->query->results->item AS $mydata)
@@ -144,7 +145,7 @@ function ProcessResult($result,$id,$source){
           break;
       case 5:// MALMWARE
           $r = new stdClass();
-          $r = json_decode($result);
+          // $r = json_decode($result);
           $r = new MalmwareObj05(json_decode($result));
 
           echo (json_encode($r));
@@ -156,7 +157,7 @@ function ProcessResult($result,$id,$source){
           break;
       case 6:// MALMWARE
           $r = new stdClass();
-          $r = json_decode($result);
+          // $r = json_decode($result);
           $r = new MalmwareObj06(json_decode($result));
 
           echo (json_encode($r));
@@ -168,7 +169,7 @@ function ProcessResult($result,$id,$source){
           break;
       case 7:// MALMWARE
           $r = new stdClass();
-          $r = json_decode($result);
+          // $r = json_decode($result);
           $r = new MalmwareObj07(json_decode($result));
 
           echo (json_encode($r));
@@ -180,7 +181,7 @@ function ProcessResult($result,$id,$source){
           break;
       case 8:// MALMWARE
           $r = new stdClass();
-          $r = json_decode($result);
+          // $r = json_decode($result);
           $r = new MalmwareObj08(json_decode($result));
 
           echo (json_encode($r));
@@ -192,7 +193,7 @@ function ProcessResult($result,$id,$source){
           break;
       case 9:// BOTNET
           $r = new stdClass();
-          $r = json_decode($result);
+          // $r = json_decode($result);
           $r = new BotnetObj09(json_decode($result));
 
           // echo (json_encode($r));
@@ -205,7 +206,7 @@ function ProcessResult($result,$id,$source){
           break;
       case 10:// BOTNET
         	$r = new stdClass();
-        	$r = json_decode($result);
+        	// $r = json_decode($result);
           $r = new BotnetObj10(json_decode($result));
 
           // echo (json_encode($r));
@@ -217,7 +218,7 @@ function ProcessResult($result,$id,$source){
           break;
       case 12:// PHISHING
           $r = new stdClass();
-          $r = json_decode($result);
+          // $r = json_decode($result);
           $r = new PhishingObj12(json_decode($result));
 
           // echo (json_encode($r));
@@ -229,7 +230,7 @@ function ProcessResult($result,$id,$source){
           break;
       case 13:// PHISHING
           $r = new stdClass();
-          $r = json_decode($result);
+          // $r = json_decode($result);
           $r = new PhishingObj13(json_decode($result));
 
           // echo (json_encode($r));
@@ -241,13 +242,25 @@ function ProcessResult($result,$id,$source){
           break;
       case 14:// SPAM
           $r = new stdClass();
-          $r = json_decode($result);
+          // $r = json_decode($result);
           $r = new SpamObj14(json_decode($result));
 
           // echo (json_encode($r));
           foreach($r->query->results->item AS $mydata)
           {
               log_spam($mydata,$source);
+          }
+
+          break;
+      case 15:// PHISHING - ECRIME API
+          $r = new stdClass();
+          // $r = json_decode($result);
+          $r = new PhishingObj15(json_decode($result));
+
+          echo (json_encode($r));
+          foreach($r->query->results->item AS $mydata)
+          {
+              log_phishing($mydata,$source);
           }
           break;
       default:
@@ -402,6 +415,29 @@ class PhishingObj13 {
         $this->query->lang = $obj->query->lang;
         // $this->query->results->item = $obj->query->results->table->tbody->tr;
         $this->query->results->item = $rs;
+    }
+}
+
+// ECRIME 15
+class PhishingObj15 {
+    public function __construct($obj) {
+        $this->query->count = $obj->current_count;
+        $this->query->created = $obj->query->created;
+        $this->query->lang = $obj->query->lang;
+        $this->query->results->item = $obj->_embedded->phish;
+        foreach($this->query->results->item AS $mydata)
+        {
+            unset($mydata->_links);
+            unset($mydata->status);
+            unset($mydata->metadata);
+            unset($mydata->modified);
+            unset($mydata->asn);
+            unset($mydata->confidence_level);
+            $mydata->target_brand = $mydata->brand;
+            $mydata->listdate = gmdate("Y-m-d\TH:i:s\Z", $mydata->date_discovered);
+            unset($mydata->brand);
+            unset($mydata->date_discovered);
+        }
     }
 }
 
