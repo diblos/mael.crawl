@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `botnet` (
   `description` varchar(200) NOT NULL,
   `guid` varchar(50) NOT NULL,
   `inserted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `source` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`guid`),
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -39,11 +40,12 @@ CREATE TABLE IF NOT EXISTS `defacement` (
   `mass_deface` varchar(5) NOT NULL,
   `re_deface` varchar(5) NOT NULL,
   `special_deface` varchar(5) NOT NULL,
-  `location` varchar(20) NOT NULL,
+  `location` varchar(50) NOT NULL,
   `domain` varchar(100) NOT NULL,
   `os` varchar(50) NOT NULL,
   `listdate` timestamp NULL DEFAULT NULL,
   `inserted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `source` varchar(200) NOT NULL,
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
 
@@ -66,6 +68,7 @@ CREATE TABLE IF NOT EXISTS `malmware` (
   `UQ` varchar(150) DEFAULT NULL COMMENT 'Tool: URL Query',
   `listdate` timestamp NULL DEFAULT NULL,
   `inserted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `source` varchar(200) NOT NULL,
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
 
@@ -75,11 +78,13 @@ CREATE TABLE IF NOT EXISTS `malmware` (
 -- Dumping structure for table crawldev.phishing
 CREATE TABLE IF NOT EXISTS `phishing` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `url` varchar(300) NOT NULL,
+  `url` text NOT NULL,
   `ip` varchar(50) NOT NULL,
+  `domain` varchar(50) NOT NULL,
   `target_brand` varchar(50) NOT NULL,
   `listdate` timestamp NULL DEFAULT NULL,
   `inserted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `source` varchar(200) NOT NULL,
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
 
@@ -97,6 +102,7 @@ CREATE TABLE IF NOT EXISTS `spam` (
   `total_browser` varchar(50) NOT NULL,
   `latest_activity` timestamp NULL DEFAULT NULL,
   `inserted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `source` varchar(200) NOT NULL,
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
 
